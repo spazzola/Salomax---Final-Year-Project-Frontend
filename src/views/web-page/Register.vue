@@ -1,214 +1,136 @@
 <template>
-  <nav-menu />
+  <nav-menu></nav-menu>
   <div>
-    <form @submit.prevent="submitForm">
-      <h3>Studio Information</h3>
-      <div class="form-group">
-        <label for="studioName">Name</label>
-        <input type="text" id="studioName" v-model="studioDto.name" required />
-      </div>
-      <div class="form-group">
-        <label for="nip">NIP</label>
-        <input type="text" id="nip" v-model="studioDto.nip" required />
-      </div>
-      <div class="form-group">
-        <label for="regon">REGON</label>
-        <input type="text" id="regon" v-model="studioDto.regon" required />
-      </div>
-      <div class="form-group">
-        <label for="phoneNumber">Phone Number</label>
-        <input
-          type="tel"
-          id="phoneNumberId"
-          v-model="studioDto.phoneNumber"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="emailId" v-model="studioDto.email" required />
-      </div>
-
-      <h3>Address</h3>
-      <div class="form-group">
-        <label for="country">Country</label>
-        <input
-          type="text"
-          id="country"
-          v-model="studioDto.addressDto.country"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="voivodeship">Voivodeship</label>
-        <input
-          type="text"
-          id="voivodeship"
-          v-model="studioDto.addressDto.voivodeship"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="city">City</label>
-        <input
-          type="text"
-          id="city"
-          v-model="studioDto.addressDto.city"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="postalCode">Postal Code</label>
-        <input
-          type="text"
-          id="postalCode"
-          v-model="studioDto.addressDto.postalCode"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="street">Street</label>
-        <input
-          type="text"
-          id="street"
-          v-model="studioDto.addressDto.street"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="houseNumber">House Number</label>
-        <input
-          type="text"
-          id="houseNumber"
-          v-model="studioDto.addressDto.houseNumber"
-          required
-        />
-      </div>
-
-      <h3>Employee Information</h3>
-      <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" id="name" v-model="employeeDto.name" required />
-      </div>
-      <div class="form-group">
-        <label for="surname">Surname</label>
-        <input
-          type="text"
-          id="surname"
-          v-model="employeeDto.surname"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="login">Login</label>
-        <input type="text" id="login" v-model="employeeDto.login" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          v-model="employeeDto.password"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="phoneNumber">Phone Number</label>
-        <input
-          type="tel"
-          id="phoneNumber"
-          v-model="employeeDto.phoneNumber"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" v-model="employeeDto.email" required />
-      </div>
-
-      <div class="form-group">
-        <button type="submit">Submit</button>
-      </div>
-    </form>
+    <div class="progress-bar">
+      <div
+        v-for="(step, index) in 3"
+        :key="index"
+        :class="{ active: index + 1 === currentStep }"
+      />
+    </div>
+    <div v-show="currentStep === 1">
+      <Studio-form @studioDto-data="handleStudioDtoInputs" />
+    </div>
+    <div v-show="currentStep === 2">
+      <Address-form
+        @addressDto-data="handleAddressDtoInputs"
+        @go-back="goBack"
+      />
+    </div>
+    <div v-show="currentStep === 3">
+      <User-form @submit="handleEmployeeDtoInputs" @go-back="goBack" />
+    </div>
   </div>
-  <the-footer />
+  <the-footer></the-footer>
 </template>
 
 <script>
+import { ref, reactive } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router"
 import NavMenu from "@/components/web-page/nav/NavMenu.vue";
 import TheFooter from "@/components/web-page/footer/TheFooter.vue";
-import { reactive } from "vue";
-import axios from "axios";
+//import axios from "axios";
+import StudioForm from "./forms/StudioForm.vue";
+import AddressForm from "./forms/AddressForm.vue";
+import UserForm from "./forms/UserForm.vue";
 
 export default {
   name: "Register",
   components: {
     NavMenu,
     TheFooter,
+    StudioForm,
+    AddressForm,
+    UserForm,
   },
   setup() {
-    const studioDto = reactive({
-      name: "",
-      nip: "",
-      regon: "",
-      phoneNumber: "",
-      email: "",
-      addressDto: {
-        country: "",
-        voivodeship: "",
-        city: "",
-        postalCode: "",
-        street: "",
-        houseNumber: "",
-      },
-    });
+    const studioStore = useStore();
+    const router = useRouter();
+    const currentStep = ref(1);
 
-    const employeeDto = reactive({
-      name: "",
-      surname: "",
-      login: "",
-      password: "",
-      phoneNumber: "",
-      email: "",
-    });
-
-    const submitForm = async () => {
-      const formData = {
-        studioDto,
-        employeeDto
-      };
-
-      try {
-        await axios.post("http://localhost:8080/studio/create", formData);
-
-        // Reset form data
-        // StudioDto.value.nip = "";
-        // StudioDto.value.regon = "";
-        // StudioDto.value.phoneNumber = "";
-        // StudioDto.value.email = "";
-
-        // StudioDto.value.AddressDto.value.country = "";
-        // StudioDto.value.AddressDto.value.voivodeship = "";
-        // StudioDto.value.AddressDto.value.city = "";
-        // StudioDto.value.AddressDto.value.postalCode = "";
-        // StudioDto.value.AddressDto.value.street = "";
-        // StudioDto.value.AddressDto.value.houseNumber = "";
-
-        // EmployeeDto.value.name = "";
-        // EmployeeDto.value.surname = "";
-        // EmployeeDto.value.login = "";
-        // EmployeeDto.value.password = "";
-        // EmployeeDto.value.phoneNumber = "";
-        // EmployeeDto.value.email = "";
-      } catch (error) {
-        console.error(error.response.data);
-      }
+    const nextStep = () => {
+      currentStep.value++;
     };
 
+    const previousStep = () => {
+      currentStep.value--;
+    };
+
+    function goBack() {
+      currentStep.value--;
+    }
+
+    const createStudioRequest = reactive({
+      studioDto: {
+        name: "",
+        nip: "",
+        regon: "",
+        phoneNumber: "",
+        email: "",
+        addressDto: {
+          country: "",
+          voivodeship: "",
+          city: "",
+          postalCode: "",
+          street: "",
+          houseNumber: "",
+        },
+      },
+      employeeDto: {},
+    });
+
+    function handleStudioDtoInputs(data) {
+      createStudioRequest.studioDto.name = data.name;
+      createStudioRequest.studioDto.nip = data.nip;
+      createStudioRequest.studioDto.regon = data.regon;
+      createStudioRequest.studioDto.phoneNumber = data.phoneNumber;
+      createStudioRequest.studioDto.email = data.email;
+
+      nextStep();
+    }
+
+    function handleAddressDtoInputs(data) {
+      createStudioRequest.studioDto.addressDto.country = data.country;
+      createStudioRequest.studioDto.addressDto.voivodeship = data.voivodeship;
+      createStudioRequest.studioDto.addressDto.city = data.city;
+      createStudioRequest.studioDto.addressDto.postalCode = data.postalCode;
+      createStudioRequest.studioDto.addressDto.street = data.street;
+      createStudioRequest.studioDto.addressDto.houseNumber = data.houseNumber;
+
+      nextStep();
+    }
+
+    async function handleEmployeeDtoInputs(data) {
+      createStudioRequest.employeeDto = data;
+      //studioStore.dispatch('studio/addStudio', createStudioRequest);
+      const response = await studioStore.dispatch('studio/addStudio', createStudioRequest);
+      if (response.status === 200) {
+        //redirect to login page
+        router.push("/login");
+        alert("Studio has been created!");
+      } else {
+        alert(response.response.data);
+      }
+    }
+
+    // async function sendRequest(data) {
+      // try {
+      //   const response = await axios.post("http://localhost:8080/studio/create", data);
+      //   //console.log(response.status);
+      //   return response.data;
+      // } catch (error) {
+      //   console.error(error.response.data);
+      // }
+    // }
     return {
-      studioDto,
-      employeeDto,
-      submitForm,
+      currentStep,
+      nextStep,
+      previousStep,
+      handleStudioDtoInputs,
+      handleAddressDtoInputs,
+      handleEmployeeDtoInputs,
+      goBack
     };
   },
 };
@@ -216,4 +138,19 @@ export default {
 
 
 <style scoped>
+.progress-bar {
+  display: flex;
+}
+
+.progress-bar div {
+  width: 33.33%;
+  height: 10px;
+  background: lightgray;
+  border-radius: 10px;
+  margin-right: 10px;
+}
+
+.progress-bar div.active {
+  background: blue;
+}
 </style>
