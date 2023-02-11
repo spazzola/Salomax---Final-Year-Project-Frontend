@@ -1,6 +1,6 @@
 <template>
     <header class="navbar">
-		<h1 class="logo">Log homes</h1>
+		<h1 class="logo">Salomax</h1>
 		<nav-bar/>
 	</header>
 </template>
@@ -24,6 +24,7 @@ header {
 
 h1 {
     font-weight: bold;
+    font-size: 4rem;
 }
 
 .navbar {
