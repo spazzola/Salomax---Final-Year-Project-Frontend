@@ -17,13 +17,21 @@ export default {
 </script>
 
 <style scoped>
+header {
+    background-color: #4ABDAC;
+    color: #FFFEFE;
+}
+
+h1 {
+    font-weight: bold;
+}
+
 .navbar {
 	display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
     /*background-color: #9B7653; /* brown color */ 
-    color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style>
