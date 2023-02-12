@@ -23,4 +23,8 @@ footer {
   color: #fffefe;
   font-weight: bold;
 }
+
+p {
+  margin: 0;
+}
 </style>
