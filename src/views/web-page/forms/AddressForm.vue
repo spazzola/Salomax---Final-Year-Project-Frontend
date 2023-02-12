@@ -1,76 +1,26 @@
 <template>
   <form>
-    <div class="form-group">
-      <input
-        type="text"
-        id="country"
-        name="addressCountry"
-        v-model="addressDto.country"
-        placeholder="Country"
-        class="form-control"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        type="text"
-        id="voivodeship"
-        name="voivodeship"
-        v-model="addressDto.voivodeship"
-        @input="validateForm"
-        placeholder="Voivodeship"
-        class="form-control"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        type="text"
-        id="city"
-        name="addressCity"
-        v-model="addressDto.city"
-        @input="validateForm"
-        placeholder="City"
-        class="form-control"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        type="text"
-        id="postalCode"
-        name="addressPostalCode"
-        v-model="addressDto.postalCode"
-        @input="validateForm"
-        placeholder="Postal code"
-        class="form-control"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        type="text"
-        id="street"
-        name="addressStreet"
-        v-model="addressDto.street"
-        @input="validateForm"
-        placeholder="Street"
-        class="form-control"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        type="text"
-        id="houseNumber"
-        name="addressHouseNumber"
-        v-model="addressDto.houseNumber"
-        @input="validateForm"
-        placeholder="House number"
-        class="form-control"
-        required
-      />
-    </div>
+    <my-text-input
+      placeholder="Country"
+      @text-input-finished="handleCountryInput"
+    />
+    <my-text-input
+      placeholder="Voivodeship"
+      @text-input-finished="handleVoivodeshipInput"
+    />
+    <my-text-input placeholder="City" @text-input-finished="handleCityInput" />
+    <my-text-input
+      placeholder="Postal code"
+      @text-input-finished="handlePostalCodeInput"
+    />
+    <my-text-input
+      placeholder="Street"
+      @text-input-finished="handleStreetInput"
+    />
+    <my-text-input
+      placeholder="House number"
+      @text-input-finished="handleHouseNumberInput"
+    />
 
     <button
       @click.prevent="goBack"
@@ -93,8 +43,10 @@
 
 <script>
 import { reactive, ref } from "vue";
+import MyTextInput from "../../../components/common/inputs/MyTextInput.vue";
 
 export default {
+  components: { MyTextInput },
   setup(props, context) {
     const isFormValid = ref(false);
 
@@ -109,6 +61,36 @@ export default {
 
     function handleSubmit() {
       context.emit("addressDto-data", addressDto);
+    }
+
+    function handleCountryInput(value) {
+      addressDto.country = value;
+      validateForm();
+    }
+
+    function handleVoivodeshipInput(value) {
+      addressDto.voivodeship = value;
+      validateForm();
+    }
+
+    function handleCityInput(value) {
+      addressDto.city = value;
+      validateForm();
+    }
+
+    function handlePostalCodeInput(value) {
+      addressDto.postalCode = value;
+      validateForm();
+    }
+
+    function handleStreetInput(value) {
+      addressDto.street = value;
+      validateForm();
+    }
+
+    function handleHouseNumberInput(value) {
+      addressDto.houseNumber = value;
+      validateForm();
     }
 
     function goBack() {
@@ -146,8 +128,20 @@ export default {
     function disableButton() {
       isFormValid.value = false;
     }
-    
-    return { addressDto, handleSubmit, goBack, isFormValid, validateForm };
+
+    return {
+      addressDto,
+      handleSubmit,
+      goBack,
+      isFormValid,
+      validateForm,
+      handleCountryInput,
+      handleVoivodeshipInput,
+      handleCityInput,
+      handlePostalCodeInput,
+      handleStreetInput,
+      handleHouseNumberInput,
+    };
   },
 };
 </script>

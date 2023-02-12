@@ -1,77 +1,35 @@
 <template>
   <form>
-    <div class="form-group">
-      <input
-        type="text"
-        id="name"
-        v-model="employeeDto.name"
-        @input="validateForm"
-        placeholder="Name"
-        class="form-control"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        type="text"
-        id="surname"
-        v-model="employeeDto.surname"
-        @input="validateForm"
-        placeholder="Surname"
-        class="form-control"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        type="text"
-        id="login"
-        v-model="employeeDto.login"
-        @input="validateForm"
-        placeholder="Login"
-        class="form-control"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        type="password"
-        id="password"
-        v-model="employeeDto.password"
-        @input="validateForm"
-        placeholder="Password"
-        class="form-control"
-        aria-describedby="passwordHelpBlock"
-        required
-      />
-      <small id="passwordHelpBlock" class="form-text text-muted">
-        Your password must be at least 6 characters long, contain letters,
-        numbers and special characters, <br />
-        and must not contain spaces.
-      </small>
-    </div>
-    <div class="form-group">
-      <input
-        type="tel"
-        id="phoneNumber"
-        v-model="employeeDto.phoneNumber"
-        @input="validateForm"
-        placeholder="Phone number"
-        class="form-control"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        type="email"
-        id="email"
-        v-model="employeeDto.email"
-        @input="validateForm"
-        placeholder="Email"
-        class="form-control"
-        required
-      />
-    </div>
+    <my-text-input placeholder="Name" @text-input-finished="handleNameInput" />
+    <my-text-input
+      placeholder="Surname"
+      @text-input-finished="handleSurnameInput"
+    />
+    <my-text-input
+      placeholder="Login"
+      @text-input-finished="handleLoginInput"
+    />
+    <my-text-input
+      placeholder="Password"
+      type="password"
+      :isValid="isPasswordValid"
+      @text-input-finished="handlePasswordInput"
+    />
+    <small id="passwordHelpBlock" class="form-text text-muted">
+      Your password must be at least 6 characters long, contain big and small
+      letters, numbers and special characters, <br />
+      and must not contain spaces.
+    </small>
+    <my-text-input
+      placeholder="Phone number"
+      @text-input-finished="handlePhoneNumberInput"
+    />
+    <my-text-input
+      placeholder="Email"
+      @text-input-finished="handleEmailInput"
+      :isValid="isEmailValid"
+    />
+
     <button
       @click.prevent="goBack"
       class="btn btn-primary"
@@ -93,10 +51,14 @@
 
 <script>
 import { reactive, ref } from "vue";
+import MyTextInput from "../../../components/common/inputs/MyTextInput.vue";
 
 export default {
+  components: { MyTextInput },
   setup(props, context) {
     const isFormValid = ref(false);
+    const isEmailValid = ref(true);
+    const isPasswordValid = ref(true);
 
     const employeeDto = reactive({
       name: "",
@@ -109,6 +71,48 @@ export default {
 
     function handleSubmit() {
       context.emit("submit", employeeDto);
+    }
+
+    function handleNameInput(value) {
+      employeeDto.name = value;
+      validateForm();
+    }
+
+    function handleSurnameInput(value) {
+      employeeDto.surname = value;
+      validateForm();
+    }
+
+    function handleLoginInput(value) {
+      employeeDto.login = value;
+      validateForm();
+    }
+
+    function handlePasswordInput(value) {
+      if (!validatePassword(value)) {
+        isPasswordValid.value = false;
+        disableButton();
+      } else {
+        isPasswordValid.value = true;
+      }
+      employeeDto.password = value;
+      validateForm();
+    }
+
+    function handlePhoneNumberInput(value) {
+      employeeDto.phoneNumber = value;
+      validateForm();
+    }
+
+    function handleEmailInput(value) {
+      if (!validateEmail(value)) {
+        isEmailValid.value = false;
+        disableButton();
+      } else {
+        isEmailValid.value = true;
+      }
+      employeeDto.email = value;
+      validateForm();
     }
 
     function goBack() {
@@ -126,13 +130,13 @@ export default {
       if (employeeDto.login === "") {
         result = false;
       }
-      if (!validatePassword(employeeDto.password)) {
+      if (!validatePassword(employeeDto.password) || !validatePassword(employeeDto.password)) {
         result = false;
       }
       if (employeeDto.phoneNumber === "") {
         result = false;
       }
-      if (!validateEmail(employeeDto.email)) {
+      if (!validateEmail(employeeDto.email) || !validateEmail(employeeDto.email)) {
         result = false;
       }
 
@@ -148,16 +152,40 @@ export default {
     }
 
     function validatePassword(password) {
-      const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
-      return regex.test(password);
+      if (password.length > 0 && password.charAt(0) !== " ") {
+        const regex =
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+        return regex.test(password);
+      } else {
+        return true;
+      }
     }
 
-    function validateEmail(value) {
-      const regex =  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return regex.test(value);
+    function validateEmail(email) {
+      if (email.length > 0 && email.charAt(0) !== " ") {
+        const regex =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return regex.test(email);
+      } else {
+        return true;
+      }
     }
 
-    return { employeeDto, handleSubmit, goBack, validateForm, isFormValid };
+    return {
+      employeeDto,
+      handleSubmit,
+      goBack,
+      validateForm,
+      isFormValid,
+      isEmailValid,
+      isPasswordValid,
+      handleNameInput,
+      handleSurnameInput,
+      handleLoginInput,
+      handlePasswordInput,
+      handlePhoneNumberInput,
+      handleEmailInput,
+    };
   },
 };
 </script>
