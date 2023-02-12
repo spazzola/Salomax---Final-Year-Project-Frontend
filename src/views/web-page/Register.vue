@@ -46,7 +46,7 @@ export default {
     UserForm,
   },
   setup() {
-    const studioStore = useStore();
+    const store = useStore();
     const router = useRouter();
     const currentStep = ref(1);
     const formNames = ["Studio's information", "Address's information", "User's information"]
@@ -119,8 +119,8 @@ export default {
 
     async function handleEmployeeDtoInputs(data) {
       createStudioRequest.employeeDto = data;
-      //studioStore.dispatch('studio/addStudio', createStudioRequest);
-      const response = await studioStore.dispatch(
+      //store.dispatch('studio/addStudio', createStudioRequest);
+      const response = await store.dispatch(
         "studio/addStudio",
         createStudioRequest
       );
