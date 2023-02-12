@@ -2,8 +2,8 @@
   <nav-menu></nav-menu>
   <div>
     <div class="progress-bar">
-      <div class="progress-bar-fill" :style="{ width: `${percent}%` }">
-        <h2>{{ currentFormName }}</h2>
+      <div class="progress-bar-fill" :style="{ width: `${percent.toFixed(2)}%` }">
+        <h2>{{ formNames[currentStep - 1] }}</h2>
       </div>
     </div>
 
@@ -49,8 +49,9 @@ export default {
     const studioStore = useStore();
     const router = useRouter();
     const currentStep = ref(1);
-    let percent = ref(33);
-    let currentFormName = ref('Studio\'s information');
+    const formNames = ["Studio's information", "Address's information", "User's information"]
+    let percent = ref(33.33);
+    let currentFormName = ref("Studio's information");
 
     const nextStep = () => {
       currentStep.value++;
@@ -62,6 +63,7 @@ export default {
 
     function goBack() {
       currentStep.value--;
+      updateProgress(-33.33);
     }
 
     const createStudioRequest = reactive({
@@ -84,7 +86,8 @@ export default {
     });
 
     function updateProgress(value) {
-      percent.value = value;
+      //percent.value = value;
+      percent.value += value;
     }
 
     function handleStudioDtoInputs(data) {
@@ -95,8 +98,9 @@ export default {
       createStudioRequest.studioDto.email = data.email;
 
       nextStep();
-      updateProgress(66);
-      currentFormName.value = 'Address\'s information';
+      //updateProgress(66);
+      updateProgress(33.33);
+      currentFormName.value = "Address's information";
     }
 
     function handleAddressDtoInputs(data) {
@@ -108,8 +112,9 @@ export default {
       createStudioRequest.studioDto.addressDto.houseNumber = data.houseNumber;
 
       nextStep();
-      updateProgress(100);
-      currentFormName.value = 'User\'s information';
+      //updateProgress(100);
+      updateProgress(33.33)
+      currentFormName.value = "User's information";
     }
 
     async function handleEmployeeDtoInputs(data) {
@@ -131,7 +136,7 @@ export default {
     return {
       percent,
       currentStep,
-      currentFormName,
+      formNames,
       nextStep,
       previousStep,
       handleStudioDtoInputs,
@@ -151,11 +156,12 @@ export default {
   background-color: #ddd;
   border-radius: 5px;
   position: relative;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }
 
 .progress-bar-fill {
   height: 100%;
-  background-color: #FC4A1A;
+  background-color: #fc4a1a;
   border-radius: 5px;
   transition: width 0.25s ease-in-out;
   display: flex;
@@ -163,7 +169,7 @@ export default {
 }
 
 h2 {
-  color: #FFFEFE;
+  color: #fffefe;
 }
 
 .forms {
