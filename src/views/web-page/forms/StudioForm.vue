@@ -18,7 +18,7 @@
     />
 
     <button
-      @click.prevent="handleSubmit"
+      @click.prevent="handleSubmit($event)"
       class="btn btn-primary"
       :disabled="!isFormValid"
     >
