@@ -5,6 +5,11 @@ import Features from '../views/web-page/Features.vue'
 import LogIn from '../views/web-page/LogIn.vue'
 import Register from '../views/web-page/Register.vue'
 import Appointments from '../views/app/appointment/Appointments.vue'
+import Clients from '../views/app/clients/Clients.vue';
+import Services from '../views/app/services/Services.vue';
+import Employees from '../views/app/employees/Employees.vue';
+import Costs from '../views/app/costs/Costs.vue';
+import Help from '../views/app/help/Help.vue';
 
 const routes = [
   {
@@ -36,6 +41,31 @@ const routes = [
     path: '/appointments',
     name: 'Appointments',
     component: Appointments
+  },
+  {
+    path: '/clients',
+    name: 'Clients',
+    component: Clients
+  },
+  {
+    path: '/services',
+    name: 'Services',
+    component: Services
+  },
+  {
+    path: '/employees',
+    name: 'Employees',
+    component: Employees
+  },
+  {
+    path: '/costs',
+    name: 'Costs',
+    component: Costs
+  },
+  {
+    path: '/Help',
+    name: 'Help',
+    component: Help
   }
 ]
 
