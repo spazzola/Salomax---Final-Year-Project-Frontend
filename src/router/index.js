@@ -4,6 +4,7 @@ import Pricing from '../views/web-page/Pricing.vue'
 import Features from '../views/web-page/Features.vue'
 import LogIn from '../views/web-page/LogIn.vue'
 import Register from '../views/web-page/Register.vue'
+import Appointments from '../views/app/appointment/Appointments.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register
+  },
+  {
+    path: '/appointments',
+    name: 'Appointments',
+    component: Appointments
   }
 ]
 

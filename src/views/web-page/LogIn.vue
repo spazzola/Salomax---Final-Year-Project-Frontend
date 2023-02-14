@@ -53,7 +53,7 @@ export default {
     async function handleSubmit() {
       let response = await store.dispatch("login", authRequest);
       if (response.status === 200) {
-        router.push("/register");
+        router.push("/appointments");
       } else {
         alert(response);
       }
