@@ -13,9 +13,6 @@
       type="password"
       @text-input-finished="handlePasswordInput"
     />
-    <!-- <button @click.prevent="handleSubmit" class="btn btn-primary">
-      Log in
-    </button> -->
     <base-button @clicked="handleSubmit" text="Log in"/>
   </form>
 
@@ -31,6 +28,7 @@ import TheFooter from "@/components/web-page/footer/TheFooter.vue";
 import MyTextInput from "../../components/common/inputs/MyTextInput.vue";
 import BaseGrowSpinner from "../../components/common/loading/BaseGrowSpinner.vue";
 import BaseButton from "../../components/common/buttons/BaseButton.vue";
+//import { isMobile, isTablet } from 'mobile-device-detect';
 
 export default {
   name: "LogIn",
