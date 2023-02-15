@@ -4,14 +4,7 @@
   <nav-menu></nav-menu>
 
   <div>
-    <div class="progress-bar">
-      <div
-        class="progress-bar-fill"
-        :style="{ width: `${percent.toFixed(2)}%` }"
-      >
-        <h2>{{ formNames[currentStep - 1] }}</h2>
-      </div>
-    </div>
+    <base-progress-bar :currentName="formNames[currentStep - 1]" :percentProgress="percent"/>
 
     <div class="forms">
       <div v-show="currentStep === 1">
@@ -43,6 +36,8 @@ import StudioForm from "./forms/StudioForm.vue";
 import AddressForm from "./forms/AddressForm.vue";
 import UserForm from "./forms/UserForm.vue";
 import BaseGrowSpinner from "../../components/common/loading/BaseGrowSpinner.vue";
+import BaseProgressBar from "../../components/common/loading/BaseProgressBar.vue";
+
 
 export default {
   name: "Register",
@@ -53,6 +48,7 @@ export default {
     AddressForm,
     UserForm,
     BaseGrowSpinner,
+    BaseProgressBar
   },
   setup() {
     const store = useStore();
@@ -65,7 +61,6 @@ export default {
       "User's information",
     ];
     let percent = ref(33.33);
-    let currentFormName = ref("Studio's information");
 
     const nextStep = () => {
       currentStep.value++;
@@ -100,7 +95,6 @@ export default {
     });
 
     function updateProgress(value) {
-      //percent.value = value;
       percent.value += value;
     }
 
@@ -112,9 +106,7 @@ export default {
       createStudioRequest.studioDto.email = data.email;
 
       nextStep();
-      //updateProgress(66);
       updateProgress(33.33);
-      currentFormName.value = "Address's information";
     }
 
     function handleAddressDtoInputs(data) {
@@ -126,9 +118,7 @@ export default {
       createStudioRequest.studioDto.addressDto.houseNumber = data.houseNumber;
 
       nextStep();
-      //updateProgress(100);
       updateProgress(33.33);
-      currentFormName.value = "User's information";
     }
 
     async function handleEmployeeDtoInputs(data) {
@@ -142,7 +132,6 @@ export default {
       loading.value = false;
 
       if (response.status === 200) {
-        //redirect to login page
         router.push("/login");
         alert("Studio has been created!");
       } else {
@@ -168,31 +157,6 @@ export default {
 
 
 <style scoped>
-.progress-bar {
-  width: 100%;
-  height: 3rem;
-  background-color: #ddd;
-  border-radius: 5px;
-  position: relative;
-  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background-color: #fc4a1a;
-  border-radius: 5px;
-  transition: width 0.25s ease-in-out;
-  display: flex;
-  justify-content: center;
-  border-color: transparent;
-  border: 2px solid #fc4a1a;
-  box-shadow: 0 0 10px #fc4a1a;
-}
-
-h2 {
-  color: #fffefe;
-}
-
 .forms {
   margin-top: 2rem;
 }
