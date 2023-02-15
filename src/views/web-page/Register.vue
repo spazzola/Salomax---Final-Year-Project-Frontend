@@ -1,8 +1,14 @@
 <template>
+  <base-grow-spinner :loading="loading" />
+
   <nav-menu></nav-menu>
+
   <div>
     <div class="progress-bar">
-      <div class="progress-bar-fill" :style="{ width: `${percent.toFixed(2)}%` }">
+      <div
+        class="progress-bar-fill"
+        :style="{ width: `${percent.toFixed(2)}%` }"
+      >
         <h2>{{ formNames[currentStep - 1] }}</h2>
       </div>
     </div>
@@ -22,6 +28,7 @@
       </div>
     </div>
   </div>
+
   <the-footer></the-footer>
 </template>
 
@@ -35,6 +42,7 @@ import TheFooter from "@/components/web-page/footer/TheFooter.vue";
 import StudioForm from "./forms/StudioForm.vue";
 import AddressForm from "./forms/AddressForm.vue";
 import UserForm from "./forms/UserForm.vue";
+import BaseGrowSpinner from "../../components/common/loading/BaseGrowSpinner.vue";
 
 export default {
   name: "Register",
@@ -44,12 +52,18 @@ export default {
     StudioForm,
     AddressForm,
     UserForm,
+    BaseGrowSpinner,
   },
   setup() {
     const store = useStore();
     const router = useRouter();
     const currentStep = ref(1);
-    const formNames = ["Studio's information", "Address's information", "User's information"]
+    const loading = ref(false);
+    const formNames = [
+      "Studio's information",
+      "Address's information",
+      "User's information",
+    ];
     let percent = ref(33.33);
     let currentFormName = ref("Studio's information");
 
@@ -113,17 +127,20 @@ export default {
 
       nextStep();
       //updateProgress(100);
-      updateProgress(33.33)
+      updateProgress(33.33);
       currentFormName.value = "User's information";
     }
 
     async function handleEmployeeDtoInputs(data) {
       createStudioRequest.employeeDto = data;
-      //store.dispatch('studio/addStudio', createStudioRequest);
+      loading.value = true;
       const response = await store.dispatch(
         "studio/addStudio",
         createStudioRequest
       );
+
+      loading.value = false;
+
       if (response.status === 200) {
         //redirect to login page
         router.push("/login");
@@ -143,6 +160,7 @@ export default {
       handleAddressDtoInputs,
       handleEmployeeDtoInputs,
       goBack,
+      loading,
     };
   },
 };
@@ -166,6 +184,9 @@ export default {
   transition: width 0.25s ease-in-out;
   display: flex;
   justify-content: center;
+  border-color: transparent;
+  border: 2px solid #fc4a1a;
+  box-shadow: 0 0 10px #fc4a1a;
 }
 
 h2 {
@@ -174,5 +195,37 @@ h2 {
 
 .forms {
   margin-top: 2rem;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.loading-spinner {
+  /* border: 16px solid #f3f3f3; */
+  border-top: 16px solid #fc4a1a;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
