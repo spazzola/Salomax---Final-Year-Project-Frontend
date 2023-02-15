@@ -3,7 +3,7 @@
     <ul>
       <router-link class="nav-link" active-class="active" to="/appointments">
         <li @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-          <font-awesome-icon icon="fa-regular fa-calendar-check" class="icon" />
+          <font-awesome-icon icon="fa-regular fa-calendar-check" />
           <p>Appointments</p>
         </li>
       </router-link>
@@ -40,6 +40,12 @@
         <li>
           <font-awesome-icon :icon="['far', 'fa-circle-question']" />
           <p>Help</p>
+        </li>
+      </router-link>
+      <router-link class="nav-link" active-class="active" to="/login">
+        <li>
+          <font-awesome-icon :icon="['fas', 'fa-arrow-right-from-bracket']" />
+          <p>Logout</p>
         </li>
       </router-link>
     </ul>
@@ -140,11 +146,4 @@ li:hover {
   margin-left: 0.3rem;
   font-size: 1.5rem;
 }
-
-.icon {
-}
-
-/* li:first-child:hover {
-  border-top-right-radius: 15px;
-} */
 </style>
