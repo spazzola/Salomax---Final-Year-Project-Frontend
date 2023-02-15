@@ -30,31 +30,18 @@
       :isValid="isEmailValid"
     />
 
-    <button
-      @click.prevent="goBack"
-      class="btn btn-primary"
-      style="margin: 0 2rem"
-    >
-      Previous
-    </button>
-    <button
-      type="submit"
-      @click.prevent="handleSubmit"
-      class="btn btn-primary"
-      :disabled="!isFormValid"
-      style="margin: 0 2rem"
-    >
-      Create
-    </button>
+    <base-button class="double-buttons" text="Previous" @clicked="goBack"/>
+    <base-button class="double-buttons" text="Create" :disabled="!isFormValid" @clicked="handleSubmit" />
   </form>
 </template>
 
 <script>
 import { reactive, ref } from "vue";
 import MyTextInput from "../../../components/common/inputs/MyTextInput.vue";
+import BaseButton from "../../../components/common/buttons/BaseButton.vue";
 
 export default {
-  components: { MyTextInput },
+  components: { MyTextInput, BaseButton },
   setup(props, context) {
     const isFormValid = ref(false);
     const isEmailValid = ref(true);

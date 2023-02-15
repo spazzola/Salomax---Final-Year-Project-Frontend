@@ -1,7 +1,11 @@
 <template>
   <form>
     <my-text-input placeholder="Name" @text-input-finished="handleNameInput" />
-    <my-text-input placeholder="NIP" @text-input-finished="handleNipInput" :isValid="isNipValid"/>
+    <my-text-input
+      placeholder="NIP"
+      @text-input-finished="handleNipInput"
+      :isValid="isNipValid"
+    />
     <my-text-input
       placeholder="REGON"
       @text-input-finished="handleRegonInput"
@@ -17,22 +21,17 @@
       :isValid="isEmailValid"
     />
 
-    <button
-      @click.prevent="handleSubmit"
-      class="btn btn-primary"
-      :disabled="!isFormValid"
-    >
-      Next
-    </button>
+    <base-button text="Next" :disabled="!isFormValid" @clicked="handleSubmit"/>
   </form>
 </template>
 
 <script>
 import { reactive, ref } from "vue";
 import MyTextInput from "../../../components/common/inputs/MyTextInput.vue";
+import BaseButton from "../../../components/common/buttons/BaseButton.vue";
 
 export default {
-  components: { MyTextInput },
+  components: { MyTextInput, BaseButton },
   setup(props, context) {
     const isFormValid = ref(false);
     const isEmailValid = ref(true);
