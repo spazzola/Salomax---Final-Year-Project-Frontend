@@ -11,6 +11,20 @@
       <div class="col-xl-3 col-md-4 col-sm-4" style="height: 100%">
         <left-menu />
       </div>
+
+      <VueCal
+        id="vuecal"
+        style="height: 720px"
+        :time-from="6 * 60"
+        :time-to="22 * 60"
+        :time-step="30"
+        :time-cell-height="60"
+        :disable-views="['years', 'year']"
+        @ready="scrollToCurrentTime"
+        ref="vuecal"
+      >
+        >
+      </VueCal>
     </div>
 
     <the-footer />
@@ -18,16 +32,33 @@
 </template>
 
 <script>
+import { ref } from "vue";
 import LeftMenu from "../../../components/app/leftmenu/LeftMenu.vue";
 import TheFooter from "../../../components/web-page/footer/TheFooter.vue";
+import VueCal from "vue-cal";
+import "vue-cal/dist/vuecal.css";
 
 export default {
   name: "Appointments",
   components: {
     LeftMenu,
     TheFooter,
+    VueCal,
   },
-  setup() {},
+  setup() {
+    const currentDate = ref(new Date());
+
+    function scrollToCurrentTime() {
+      const calendar = document.querySelector("#vuecal .vuecal__bg");
+      const hours = currentDate.value.getHours() + currentDate.value.getMinutes() / 60;
+      calendar.scrollTo({
+        top: hours * 60,
+        behavior: "smooth",
+      });
+    }
+
+    return { scrollToCurrentTime };
+  },
 };
 </script>
 
@@ -54,5 +85,18 @@ h1 {
 
 .row {
   height: 100%;
+  flex-wrap: nowrap;
+}
+
+.vuecal {
+  padding: 0;
+}
+
+.vuecal__flex[column] {
+  flex: none;
+}
+
+.vuecal__title-bar {
+  background-color: blue !important;
 }
 </style>
