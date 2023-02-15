@@ -5,7 +5,7 @@
     class="btn btn-primary"
     :disabled="isDisabled"
   >
-   {{btntext}}
+   {{ btntext }}
   </button>
 </template>
 
