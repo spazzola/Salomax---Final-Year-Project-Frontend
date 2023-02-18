@@ -1,5 +1,5 @@
 <template>
-  <div class="form-group">
+  <div>
     <input :value="inputValue" :placeholder="placeholder" :isValid="isValid" @input="emitEvent" class="form-control" :class="{invalid: !isValid}" :type="type"/>
   </div>
 </template>
