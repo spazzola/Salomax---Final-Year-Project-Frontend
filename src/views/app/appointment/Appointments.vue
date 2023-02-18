@@ -1,5 +1,6 @@
 <template>
-  <appointment-details :showDialog="showDialog" @hide-dialog="hideDialog"/>
+  <appointment-details :showDialog="showAppointmentDetailsDialog" @hide-dialog="hideDialog" :appointment="selectedEvent"/>
+  <appointment-add :showDialog="showAppointmentAddDialog" @hide-dialog="hideDialog"/>
 
   <div class="container" style="height: 100%; width: 100vw">
     <div class="row header">
@@ -14,7 +15,7 @@
         <left-menu />
       </div>
       <div class="col-xl-3">
-        <base-button text="New Appointment" class="btn-add-appointment" />
+        <base-button text="New Appointment" class="btn-add-appointment" @clicked="onShowAppointmentAddDialog"/>
         <vue-cal
           class="vuecal--rounded-theme vuecal--green-theme"
           xsmall
@@ -38,13 +39,13 @@
         :hideViewSelector="false"
         :disable-views="['years', 'year']"
         @ready="scrollToCurrentTime"
-        :on-event-click="onEventClick"
+        :on-event-click="onAppointmentClick"
         :events="events"
         :selected-date="selectedDate"
         ref="vuecal"
       >
         <template #event="{ event }">
-          <appointment-card :event="event" :showDialog="showDialog" />
+          <appointment-card :event="event" :showDialog="showAppointmentDetailsDialog" />
         </template>
       </VueCal>
     </div>
@@ -61,6 +62,7 @@ import BaseButton from "../../../components/common/buttons/BaseButton.vue";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import AppointmentDetails from './AppointmentDetails.vue';
+import AppointmentAdd from "./AppointmentAdd.vue";
 
 export default {
   name: "Appointments",
@@ -71,64 +73,39 @@ export default {
     AppointmentCard,
     BaseButton,
     AppointmentDetails,
+    AppointmentAdd
   },
   setup() {
     const currentDate = ref(new Date());
     const selectedDate = ref(currentDate.value);
     const events = [
       {
-        start: "2023-02-13 16:00",
-        end: "2023-02-13 16:05",
-        title: "Alice",
-        price: 30,
-        duration: 5,
-      },
-      {
-        start: "2023-02-14 16:00",
-        end: "2023-02-14 16:10",
-        title: "Alice",
-        price: 30,
-        duration: 10,
-      },
-      {
-        start: "2023-02-15 16:00",
-        end: "2023-02-15 16:15",
-        title: "Alice",
-        price: 30,
-        duration: 15,
-      },
-      {
-        start: "2023-02-16 16:00",
-        end: "2023-02-16 16:20",
-        title: "Alice",
-        price: 30,
-        duration: 20,
-      },
-      {
-        start: "2023-02-17 16:00",
-        end: "2023-02-17 16:30",
-        title: "Joanna",
-        price: 50,
-        duration: 30,
-      },
-      {
-        start: "2023-02-18 16:00",
-        end: "2023-02-18 16:40",
-        title: "Alice",
-        price: 30,
-        duration: 40,
-      },
-      {
         start: "2023-02-19 16:00",
         end: "2023-02-19 16:50",
-        title: "Alice",
+        title: "",
         price: 30,
         duration: 50,
+        note: "",
+        clientDto: {
+          name: "Alice",
+          surname: "Carter",
+          phoneNumber: "111111111",
+        },
+        isFinished: false,
+        appointmentDetailsDto: [
+          {
+            name: 'Manicure'
+          },
+          {
+            name: "Pedicure"
+          }
+        ]
       },
     ];
 
-    let selectedEvent = {};
-    const showDialog = ref(false);
+    let selectedEvent = ref({});
+    const showAppointmentDetailsDialog = ref(false);
+    const showAppointmentAddDialog = ref(false);
 
     function scrollToCurrentTime() {
       const calendar = document.querySelector("#vuecal .vuecal__bg");
@@ -140,12 +117,16 @@ export default {
       });
     }
 
-    function onEventClick(event, e) {
-      selectedEvent = event;
-      showDialog.value = true;
+    function onAppointmentClick(event, e) {
+      selectedEvent.value = event;
+      showAppointmentDetailsDialog.value = true;
       // console.log("triggered");
       // Prevent navigating to narrower view (default vue-cal behavior).
       e.stopPropagation();
+    }
+
+    function onShowAppointmentAddDialog() {
+      showAppointmentAddDialog.value = true;
     }
 
     function changeSelectedDate(event, e) {
@@ -153,18 +134,21 @@ export default {
     }
 
     function hideDialog() {
-      showDialog.value = false;
+      showAppointmentDetailsDialog.value = false;
+      showAppointmentAddDialog.value = false;
     }
 
     return {
       selectedDate,
       scrollToCurrentTime,
-      onEventClick,
+      onAppointmentClick,
       events,
       selectedEvent,
-      showDialog,
+      showAppointmentDetailsDialog,
       changeSelectedDate,
       hideDialog,
+      showAppointmentAddDialog,
+      onShowAppointmentAddDialog
     };
   },
 };
