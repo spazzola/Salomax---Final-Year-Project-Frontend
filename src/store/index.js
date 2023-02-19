@@ -3,6 +3,10 @@ import axios from "axios";
 import { baseURL } from '../base-url.js';
 
 import studioModule from './modules/studio/index.js';
+import clientModule from './modules/client/index.js';
+import workModule from './modules/work/index.js';
+import employeeModule from './modules/employee/index.js';
+import appointmentModule from './modules/appointment/index.js';
 
 export default createStore({
   state: {
@@ -58,6 +62,10 @@ export default createStore({
     }
   },
   modules: {
-    studio: studioModule
+    studio: studioModule,
+    client: clientModule,
+    work: workModule,
+    employee: employeeModule,
+    appointment: appointmentModule
   }
 })
