@@ -40,19 +40,24 @@ export default createStore({
         // const expiresIn = 5000;
         const expirationDate = new Date().getTime() + expiresIn;
 
+        localStorage.setItem('id', responseData.id);
         localStorage.setItem('jwt', responseData.jwt);
         localStorage.setItem('login', responseData.login);
         localStorage.setItem('role', responseData.role);
         localStorage.setItem('name', responseData.name);
-        localStorage.setItem('surname', responseData.surname)
+        localStorage.setItem('surname', responseData.surname);
+        localStorage.setItem('studioId', responseData.studioId);
         localStorage.setItem('tokenExpiration', expirationDate);
-
+        console.log(responseData);
+        //need to get studioId
         context.commit('setUser', {
+          id: responseData.id,
           jwt: responseData.jwt,
           login: responseData.login,
           role: responseData.role,
           name: responseData.name,
-          surname: responseData.surname
+          surname: responseData.surname,
+          studioId: responseData.studioId
         });
         
         return response;
