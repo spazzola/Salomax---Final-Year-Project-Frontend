@@ -22,6 +22,7 @@ import BaseGrowSpinner from "../../../components/common/loading/BaseGrowSpinner.
 
 export default {
   name: "AppointmentAdd",
+  emits: ['hide-dialog'],
   props: {
     showDialog: {
       type: Boolean,
@@ -55,7 +56,7 @@ export default {
       }
     }
 
-    return { hideDialog, submitForm };
+    return { hideDialog, submitForm, loading };
   },
 };
 </script>
