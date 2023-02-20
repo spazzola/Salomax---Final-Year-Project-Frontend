@@ -1,6 +1,13 @@
 <template>
-  <appointment-details :showDialog="showAppointmentDetailsDialog" @hide-dialog="hideDialog" :appointment="selectedEvent"/>
-  <appointment-add :showDialog="showAppointmentAddDialog" @hide-dialog="hideDialog"/>
+  <appointment-details
+    :showDialog="showAppointmentDetailsDialog"
+    @hide-dialog="hideDialog"
+    :appointment="selectedEvent"
+  />
+  <appointment-add
+    :showDialog="showAppointmentAddDialog"
+    @hide-dialog="hideDialog"
+  />
 
   <div class="container" style="height: 100%; width: 100vw">
     <div class="row header">
@@ -15,7 +22,11 @@
         <left-menu />
       </div>
       <div class="col-xl-3">
-        <base-button text="New Appointment" class="btn-add-appointment" @clicked="onShowAppointmentAddDialog"/>
+        <base-button
+          text="New Appointment"
+          class="btn-add-appointment"
+          @clicked="onShowAppointmentAddDialog"
+        />
         <vue-cal
           class="vuecal--rounded-theme vuecal--green-theme"
           xsmall
@@ -40,12 +51,15 @@
         :disable-views="['years', 'year']"
         @ready="scrollToCurrentTime"
         :on-event-click="onAppointmentClick"
-        :events="events"
+        :events="appointments"
         :selected-date="selectedDate"
         ref="vuecal"
       >
         <template #event="{ event }">
-          <appointment-card :event="event" :showDialog="showAppointmentDetailsDialog" />
+          <appointment-card
+            :event="event"
+            :showDialog="showAppointmentDetailsDialog"
+          />
         </template>
       </VueCal>
     </div>
@@ -54,14 +68,15 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
+import { useStore } from "vuex";
 import LeftMenu from "../../../components/app/leftmenu/LeftMenu.vue";
 import TheFooter from "../../../components/web-page/footer/TheFooter.vue";
 import AppointmentCard from "./AppointmentCard.vue";
 import BaseButton from "../../../components/common/buttons/BaseButton.vue";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
-import AppointmentDetails from './AppointmentDetails.vue';
+import AppointmentDetails from "./AppointmentDetails.vue";
 import AppointmentAdd from "./AppointmentAdd.vue";
 
 export default {
@@ -73,35 +88,14 @@ export default {
     AppointmentCard,
     BaseButton,
     AppointmentDetails,
-    AppointmentAdd
+    AppointmentAdd,
   },
   setup() {
+    const store = useStore();
     const currentDate = ref(new Date());
     const selectedDate = ref(currentDate.value);
-    const events = [
-      {
-        start: "2023-02-19 16:00",
-        end: "2023-02-19 16:50",
-        title: "",
-        price: 30,
-        duration: 50,
-        note: "",
-        clientDto: {
-          name: "Alice",
-          surname: "Carter",
-          phoneNumber: "111111111",
-        },
-        isFinished: false,
-        appointmentDetailsDto: [
-          {
-            name: 'Manicure'
-          },
-          {
-            name: "Pedicure"
-          }
-        ]
-      },
-    ];
+    //let appointments = ref([]);
+    const appointments = ref([]);
 
     let selectedEvent = ref({});
     const showAppointmentDetailsDialog = ref(false);
@@ -136,19 +130,56 @@ export default {
     function hideDialog() {
       showAppointmentDetailsDialog.value = false;
       showAppointmentAddDialog.value = false;
+      fetchData();
     }
+
+    async function fetchData() {
+      const params = {
+        month: 2,
+        year: 2023,
+        employeeId: 1,
+        studioId: 1,
+      };
+      await store.dispatch("appointment/loadMonthAppointments", params);
+      appointments.value = store.getters["appointment/getAllAppointments"];
+      const fetchedAppointments = store.getters["appointment/getAllAppointments"];
+      appointments.value = fetchedAppointments.map((appointment) => {
+        return {
+          start: formatDate(appointment.startDate),
+          end: formatDate(appointment.endDate),
+          clientDto: appointment.clientDto,
+          price: appointment.price,
+          duration: 50,
+          isFinished: appointment.isFinished,
+          appointmentDetailsDto: appointment.appointmentDetailsDto
+        }
+      })
+    }
+
+    function formatDate(date) {
+      const day = date.substring(0, 2);
+      const month = date.substring(3, 5);
+      const year = date.substring(6, 10);
+      const hour = date.substring(11, 13);
+      const minute = date.substring(14, 16);
+      
+      return `${year}/${month}/${day} ${hour}:${minute}`
+    }
+    onBeforeMount(async () => {
+      await fetchData();
+    });
 
     return {
       selectedDate,
       scrollToCurrentTime,
       onAppointmentClick,
-      events,
+      appointments,
       selectedEvent,
       showAppointmentDetailsDialog,
       changeSelectedDate,
       hideDialog,
       showAppointmentAddDialog,
-      onShowAppointmentAddDialog
+      onShowAppointmentAddDialog,
     };
   },
 };
