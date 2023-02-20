@@ -76,6 +76,7 @@ import BaseGrowSpinner from "../../../components/common/loading/BaseGrowSpinner.
 export default {
   name: "AppointmentForm",
   components: { BaseButton, BaseGrowSpinner },
+  emits: ['hide-dialog', 'submit-form'],
   setup(props, context) {
     const loading = ref(false);
     const isAdmin = ref(true);
@@ -119,13 +120,14 @@ export default {
     function handleSubmit() {
       const workIds = selectedServices.value.map((work) => work.id);
       const startDate = formatDate(selectedStartDate.value);
-
+      let studioId = localStorage.getItem("studioId");
+      let employeeId = localStorage.getItem("id");
       const createAppointmentRequest = {
         startDate,
         note: note.value,
-        studioId: 1,
+        studioId,
         clientId: selectedClient.value.id,
-        employeeId: 1,
+        employeeId,
         workIds,
       };
 
@@ -137,10 +139,13 @@ export default {
       let month = date.getMonth() + 1;
       const year = date.getFullYear();
       const hours = date.getHours();
-      const minutes = date.getMinutes();
+      let minutes = date.getMinutes();
 
       if (month < 10) {
         month = "0" + month;
+      }
+      if (minutes < 10) {
+        minutes = "0" + minutes;
       }
 
       return `${day}/${month}/${year} ${hours}:${minutes}`;
@@ -151,6 +156,7 @@ export default {
     });
 
     return {
+      loading,
       isAdmin,
       selectedStartDate,
       clients,
