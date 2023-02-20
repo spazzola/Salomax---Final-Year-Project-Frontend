@@ -1,5 +1,5 @@
 export default {
-  getAllAppointment(state) {
+  getAllAppointments(state) {
       return state.appointments;
   },
   getAppointment(state) {
