@@ -1,6 +1,6 @@
 export default {
   setAppointments(state, payload) {
-      state.setAppointments = payload;
+      state.appointments = payload;
   },
   setAppointment(state, payload) {
       state.appointment = payload;

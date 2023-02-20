@@ -13,7 +13,17 @@ export default {
     }
   },
 
-  async setAppointment(context, data) {
-    context.commit('setAppointment', data);
-  }
+  async loadMonthAppointments(context, params) {
+    const response = await axios.get(baseURL + "/appointment/getMonthAppointments", {
+      params: {
+        month: params.month,
+        year: params.year,
+        employeeId: params.employeeId,
+        studioId: params.studioId
+      }
+    });
+    let appointments = response.data
+    context.commit('setAppointments', appointments);
+  },
+
 }
