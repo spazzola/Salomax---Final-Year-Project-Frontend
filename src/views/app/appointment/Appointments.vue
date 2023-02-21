@@ -1,13 +1,16 @@
 <template>
   <appointment-details
     :showDialog="showAppointmentDetailsDialog"
-    @hide-dialog="hideDialog"
+    @hide-dialog="hideDialogs"
+    @open-edit-dialog="onShowAppointmentEditDialog"
     :appointment="selectedEvent"
   />
   <appointment-add
     :showDialog="showAppointmentAddDialog"
-    @hide-dialog="hideDialog"
+    @hide-dialog="hideDialogs"
   />
+
+  <appointment-edit v-if="isEventSelected" :showDialog="showAppointmentEditDialog"  @hide-dialog="hideDialogs" :selectedAppointment="selectedEvent"/>
 
   <div class="container" style="height: 100%; width: 100vw">
     <div class="row header">
@@ -78,6 +81,7 @@ import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import AppointmentDetails from "./AppointmentDetails.vue";
 import AppointmentAdd from "./AppointmentAdd.vue";
+import AppointmentEdit from './AppointmentEdit.vue';
 
 export default {
   name: "Appointments",
@@ -89,17 +93,19 @@ export default {
     BaseButton,
     AppointmentDetails,
     AppointmentAdd,
+    AppointmentEdit,
   },
   setup() {
     const store = useStore();
     const currentDate = ref(new Date());
     const selectedDate = ref(currentDate.value);
-    //let appointments = ref([]);
     const appointments = ref([]);
 
     let selectedEvent = ref({});
+    const isEventSelected = ref(false);
     const showAppointmentDetailsDialog = ref(false);
     const showAppointmentAddDialog = ref(false);
+    const showAppointmentEditDialog = ref(false);
 
     function scrollToCurrentTime() {
       const calendar = document.querySelector("#vuecal .vuecal__bg");
@@ -114,8 +120,6 @@ export default {
     function onAppointmentClick(event, e) {
       selectedEvent.value = event;
       showAppointmentDetailsDialog.value = true;
-      // console.log("triggered");
-      // Prevent navigating to narrower view (default vue-cal behavior).
       e.stopPropagation();
     }
 
@@ -123,13 +127,20 @@ export default {
       showAppointmentAddDialog.value = true;
     }
 
+    function onShowAppointmentEditDialog() {
+      hideDialogs();
+      isEventSelected.value = true;
+      showAppointmentEditDialog.value = true;
+    }
+
     function changeSelectedDate(event, e) {
       selectedDate.value = e;
     }
 
-    function hideDialog() {
+    function hideDialogs() {
       showAppointmentDetailsDialog.value = false;
       showAppointmentAddDialog.value = false;
+      showAppointmentEditDialog.value = false;
       fetchData();
     }
 
@@ -145,9 +156,11 @@ export default {
       const fetchedAppointments = store.getters["appointment/getAllAppointments"];
       appointments.value = fetchedAppointments.map((appointment) => {
         return {
+          id: appointment.id,
           start: formatDate(appointment.startDate),
           end: formatDate(appointment.endDate),
           clientDto: appointment.clientDto,
+          employeeDto: appointment.employeeDto,
           price: appointment.price,
           duration: 50,
           isFinished: appointment.isFinished,
@@ -175,11 +188,14 @@ export default {
       onAppointmentClick,
       appointments,
       selectedEvent,
+      isEventSelected,
       showAppointmentDetailsDialog,
       changeSelectedDate,
-      hideDialog,
+      hideDialogs,
       showAppointmentAddDialog,
       onShowAppointmentAddDialog,
+      showAppointmentEditDialog,
+      onShowAppointmentEditDialog
     };
   },
 };

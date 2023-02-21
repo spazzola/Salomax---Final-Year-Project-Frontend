@@ -3,20 +3,23 @@
 
   <div class="container">
     <div class="date-content">
-      <div class="date-content">
+      <VueDatePicker
+        v-model="selectedStartDate"
+        placeholder="Select start date"
+        :format="formatDateForRequest"
+      ></VueDatePicker>
+      <div v-if="mode === 'edit'">
         <VueDatePicker
-          v-model="selectedStartDate"
-          placeholder="Select start date"
-          :format="formatDate"
+          v-model="selectedEndDate"
+          placeholder="Select end date"
+          :format="formatDateForRequest"
         ></VueDatePicker>
       </div>
     </div>
 
-    //ADD END DATE FOR EDIT
-    <!-- <div class="date-content" v-if="false">
+    <!-- <div class="date-content" v-if="mode === 'edit'">
       <div class="date-content">
-        <label>Select start date</label>
-        <VueDatePicker v-model="selectedStartDate"></VueDatePicker>
+        <VueDatePicker v-model="selectedEndDate" placeholder="Select end date" :format="formatDateForRequest"></VueDatePicker>
       </div>
     </div> -->
 
@@ -63,7 +66,8 @@
       ></textarea>
     </div>
     <base-button class="double-buttons" @clicked="handleCancel" text="Cancel" />
-    <base-button class="double-buttons" @clicked="handleSubmit" text="Create" />
+    <base-button v-if="mode === 'edit'" class="double-buttons" @clicked="handleSubmitEdit" text="Update" />
+    <base-button v-else class="double-buttons" @clicked="handleSubmitAdd" text="Create" />
   </div>
 </template>
 
@@ -76,23 +80,42 @@ import BaseGrowSpinner from "../../../components/common/loading/BaseGrowSpinner.
 export default {
   name: "AppointmentForm",
   components: { BaseButton, BaseGrowSpinner },
-  emits: ['hide-dialog', 'submit-form'],
+  emits: ["hide-dialog", "submit-form", "submit-edit-form"],
+  props: {
+    mode: {
+      type: String,
+      default: "add",
+    },
+    appointment: {
+      type: Object,
+      default: null,
+    },
+  },
   setup(props, context) {
     const loading = ref(false);
-    const isAdmin = ref(true);
+
+    const role = localStorage.getItem("role");
+    const isAdmin = ref(role === 'ADMIN' || role === "OWNER");
+
     const store = useStore();
+
     let selectedStartDate = ref();
+    let selectedEndDate = ref();
+
     const selectedClient = ref();
     let clients = ref([]);
+
     let selectedServices = ref();
     let services = ref([]);
+
     const selectedEmployee = ref();
     let employees = ref([]);
+
     const note = ref("");
 
     async function fetchData() {
       loading.value = true;
-      
+
       await store.dispatch("client/loadClients", 1);
       clients.value = store.getters["client/getAllClients"];
 
@@ -117,24 +140,54 @@ export default {
       context.emit("hide-dialog");
     }
 
-    function handleSubmit() {
-      const workIds = selectedServices.value.map((work) => work.id);
-      const startDate = formatDate(selectedStartDate.value);
-      let studioId = localStorage.getItem("studioId");
-      let employeeId = localStorage.getItem("id");
-      const createAppointmentRequest = {
-        startDate,
-        note: note.value,
-        studioId,
-        clientId: selectedClient.value.id,
-        employeeId,
-        workIds,
-      };
+    function handleSubmitAdd() {
+      if (validateForm()) {
+        const workIds = selectedServices.value.map((work) => work.id);
+        const startDate = formatDateForRequest(selectedStartDate.value);
+        let studioId = localStorage.getItem("studioId");
+        let employeeId = localStorage.getItem("id");
+        const createAppointmentRequest = {
+          startDate,
+          note: note.value,
+          studioId,
+          clientId: selectedClient.value.id,
+          employeeId,
+          workIds,
+        };
 
-      context.emit("submit-form", createAppointmentRequest);
+        context.emit("submit-form", createAppointmentRequest);
+      } else {
+        console.log("SHOW ERROR TO USER");
+      }
     }
 
-    function formatDate(date) {
+    function handleSubmitEdit() {
+      if (validateForm()) {
+        console.log(selectedStartDate.value);
+        let startDate = new Date(selectedStartDate.value);
+        let endDate = new Date(selectedEndDate.value);
+        startDate = formatDateForRequest(startDate);
+        endDate = formatDateForRequest(endDate);
+        const workIds = selectedServices.value.map((work) => work.id);
+        let studioId = localStorage.getItem("studioId");
+        const updateAppointmentRequest = {
+          id: props.appointment.id,
+          startDate,
+          endDate,
+          note: note.value,
+          studioId,
+          clientId: selectedClient.value.id,
+          employeeId: selectedEmployee.value.id,
+          workIds
+        }
+
+        context.emit("submit-edit-form", updateAppointmentRequest);
+      } else {
+        console.log("SHOW ERROR TO USER");
+      }
+    }
+
+    function formatDateForRequest(date) {
       const day = date.getDate();
       let month = date.getMonth() + 1;
       const year = date.getFullYear();
@@ -151,14 +204,65 @@ export default {
       return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
 
-    onBeforeMount(() => {
-      fetchData();
+    function formatDateForView(date) {
+      const day = date.substring(0, 2);
+      const month = date.substring(3, 5);
+      const year = date.substring(6, 10);
+      const hour = date.substring(11, 13);
+      const minute = date.substring(14, 16);
+
+      return `${year}/${month}/${day} ${hour}:${minute}`;
+    }
+
+    function validateForm() {
+      if (selectedStartDate.value === undefined) {
+        return false;
+      }
+      if (props.mode === "edit" && selectedEndDate.value === undefined) {
+        return false;
+      }
+      if (selectedClient.value === undefined) {
+        return false;
+      }
+      if (
+        selectedServices.value === undefined ||
+        selectedServices.value.length === 0
+      ) {
+        return false;
+      }
+      if (
+        selectedEmployee.value === undefined ||
+        selectedEmployee.value == null
+      ) {
+        return false;
+      }
+
+      return true;
+    }
+
+    function setUpValuesForEditing() {
+      if (props.mode === "edit") {
+        const appointment = props.appointment;
+        selectedStartDate.value = formatDateForView(appointment.startDate);
+        selectedEndDate.value = formatDateForView(appointment.endDate);
+        selectedClient.value = clients.value.find((client) => client.id = appointment.clientDto.id);
+        const appointmentDetails = appointment.appointmentDetailsDto;
+        selectedServices.value = services.value.filter(service => appointmentDetails.some(el => el.workDto.id === service.id));
+        selectedEmployee.value = employees.value.find((employee) => employee.id = appointment.employeeDto.id);
+        note.value = appointment.note;
+      }
+    }
+
+    onBeforeMount(async () => {
+      await fetchData();
+      setUpValuesForEditing();
     });
 
     return {
       loading,
       isAdmin,
       selectedStartDate,
+      selectedEndDate,
       clients,
       selectedClient,
       services,
@@ -169,8 +273,9 @@ export default {
       workNamePriceDuration,
       note,
       handleCancel,
-      handleSubmit,
-      formatDate,
+      handleSubmitAdd,
+      handleSubmitEdit,
+      formatDateForRequest,
     };
   },
 };
@@ -183,8 +288,9 @@ export default {
 
 .date-content {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-evenly;
 }
 
 .double-buttons {
