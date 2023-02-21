@@ -10,7 +10,12 @@
     @hide-dialog="hideDialogs"
   />
 
-  <appointment-edit v-if="isEventSelected" :showDialog="showAppointmentEditDialog"  @hide-dialog="hideDialogs" :selectedAppointment="selectedEvent"/>
+  <appointment-edit
+    v-if="isEventSelected"
+    :showDialog="showAppointmentEditDialog"
+    @hide-dialog="hideDialogs"
+    :selectedAppointment="selectedEvent"
+  />
 
   <div class="container" style="height: 100%; width: 100vw">
     <div class="row header">
@@ -39,6 +44,7 @@
           :disable-views="['week']"
           style="width: 100%; height: 300px"
           @cell-click="changeSelectedDate('cell-click', $event)"
+          @view-change="onChangeMonth"
         >
         </vue-cal>
       </div>
@@ -56,6 +62,7 @@
         :on-event-click="onAppointmentClick"
         :events="appointments"
         :selected-date="selectedDate"
+        @view-change="onChangeMonth"
         ref="vuecal"
       >
         <template #event="{ event }">
@@ -81,7 +88,7 @@ import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import AppointmentDetails from "./AppointmentDetails.vue";
 import AppointmentAdd from "./AppointmentAdd.vue";
-import AppointmentEdit from './AppointmentEdit.vue';
+import AppointmentEdit from "./AppointmentEdit.vue";
 
 export default {
   name: "Appointments",
@@ -99,6 +106,7 @@ export default {
     const store = useStore();
     const currentDate = ref(new Date());
     const selectedDate = ref(currentDate.value);
+    const currentMonth = ref(selectedDate.value.getMonth() + 1)
     const appointments = ref([]);
 
     let selectedEvent = ref({});
@@ -144,7 +152,15 @@ export default {
       fetchData();
     }
 
+    async function onChangeMonth ({ startDate }) {
+        if ((startDate.getMonth() + 1) != currentMonth.value) {
+          currentMonth.value = startDate.getMonth() + 1;
+          await fetchData();
+        }
+    }
+
     async function fetchData() {
+      console.log("fetching");
       const employeeId = localStorage.getItem("id");
       const studioId = localStorage.getItem("studioId");
       const params = {
@@ -153,8 +169,10 @@ export default {
         employeeId,
         studioId,
       };
+      
       await store.dispatch("appointment/loadMonthAppointments", params);
-      const fetchedAppointments = store.getters["appointment/getAllAppointments"];
+      const fetchedAppointments =
+        store.getters["appointment/getAllAppointments"];
       appointments.value = fetchedAppointments.map((appointment) => {
         return {
           id: appointment.id,
@@ -165,9 +183,9 @@ export default {
           price: appointment.price,
           duration: 50,
           isFinished: appointment.isFinished,
-          appointmentDetailsDto: appointment.appointmentDetailsDto
-        }
-      })
+          appointmentDetailsDto: appointment.appointmentDetailsDto,
+        };
+      });
     }
 
     function formatDate(date) {
@@ -176,9 +194,10 @@ export default {
       const year = date.substring(6, 10);
       const hour = date.substring(11, 13);
       const minute = date.substring(14, 16);
-      
-      return `${year}/${month}/${day} ${hour}:${minute}`
+
+      return `${year}/${month}/${day} ${hour}:${minute}`;
     }
+
     onBeforeMount(async () => {
       await fetchData();
     });
@@ -196,7 +215,8 @@ export default {
       showAppointmentAddDialog,
       onShowAppointmentAddDialog,
       showAppointmentEditDialog,
-      onShowAppointmentEditDialog
+      onShowAppointmentEditDialog,
+      onChangeMonth
     };
   },
 };
