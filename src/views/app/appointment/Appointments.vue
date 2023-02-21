@@ -51,7 +51,7 @@
         :time-step="30"
         :time-cell-height="60"
         :hideViewSelector="false"
-        :disable-views="['years', 'year']"
+        :disable-views="['years', 'year', 'month']"
         @ready="scrollToCurrentTime"
         :on-event-click="onAppointmentClick"
         :events="appointments"
@@ -145,14 +145,15 @@ export default {
     }
 
     async function fetchData() {
+      const employeeId = localStorage.getItem("id");
+      const studioId = localStorage.getItem("studioId");
       const params = {
-        month: 2,
-        year: 2023,
-        employeeId: 1,
-        studioId: 1,
+        month: selectedDate.value.getMonth() + 1,
+        year: selectedDate.value.getFullYear(),
+        employeeId,
+        studioId,
       };
       await store.dispatch("appointment/loadMonthAppointments", params);
-      appointments.value = store.getters["appointment/getAllAppointments"];
       const fetchedAppointments = store.getters["appointment/getAllAppointments"];
       appointments.value = fetchedAppointments.map((appointment) => {
         return {
