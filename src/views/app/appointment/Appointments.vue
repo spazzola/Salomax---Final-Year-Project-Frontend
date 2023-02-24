@@ -1,4 +1,6 @@
 <template>
+  <base-grow-spinner :loading="loading" />
+
   <appointment-details
     :showDialog="showAppointmentDetailsDialog"
     @hide-dialog="hideDialogs"
@@ -84,6 +86,7 @@ import LeftMenu from "../../../components/app/leftmenu/LeftMenu.vue";
 import TheFooter from "../../../components/web-page/footer/TheFooter.vue";
 import AppointmentCard from "./AppointmentCard.vue";
 import BaseButton from "../../../components/common/buttons/BaseButton.vue";
+import BaseGrowSpinner from "../../../components/common/loading/BaseGrowSpinner.vue";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import AppointmentDetails from "./AppointmentDetails.vue";
@@ -98,15 +101,17 @@ export default {
     VueCal,
     AppointmentCard,
     BaseButton,
+    BaseGrowSpinner,
     AppointmentDetails,
     AppointmentAdd,
     AppointmentEdit,
   },
   setup() {
     const store = useStore();
+    const loading = ref(false);
     const currentDate = ref(new Date());
     const selectedDate = ref(currentDate.value);
-    const currentMonth = ref(selectedDate.value.getMonth() + 1)
+    const currentMonth = ref(selectedDate.value.getMonth() + 1);
     const appointments = ref([]);
 
     let selectedEvent = ref({});
@@ -152,15 +157,15 @@ export default {
       fetchData();
     }
 
-    async function onChangeMonth ({ startDate }) {
-        if ((startDate.getMonth() + 1) != currentMonth.value) {
-          currentMonth.value = startDate.getMonth() + 1;
-          await fetchData();
-        }
+    async function onChangeMonth({ startDate }) {
+      if (startDate.getMonth() + 1 != currentMonth.value) {
+        currentMonth.value = startDate.getMonth() + 1;
+        await fetchData();
+      }
     }
 
     async function fetchData() {
-      console.log("fetching");
+      loading.value = true;
       const employeeId = localStorage.getItem("id");
       const studioId = localStorage.getItem("studioId");
       const params = {
@@ -169,10 +174,11 @@ export default {
         employeeId,
         studioId,
       };
-      
+
       await store.dispatch("appointment/loadMonthAppointments", params);
       const fetchedAppointments =
         store.getters["appointment/getAllAppointments"];
+      loading.value = false;
       appointments.value = fetchedAppointments.map((appointment) => {
         return {
           id: appointment.id,
@@ -203,6 +209,7 @@ export default {
     });
 
     return {
+      loading,
       selectedDate,
       scrollToCurrentTime,
       onAppointmentClick,
@@ -216,7 +223,7 @@ export default {
       onShowAppointmentAddDialog,
       showAppointmentEditDialog,
       onShowAppointmentEditDialog,
-      onChangeMonth
+      onChangeMonth,
     };
   },
 };

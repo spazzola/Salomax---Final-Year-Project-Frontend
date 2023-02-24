@@ -44,9 +44,10 @@
           </div>
         </div>
         <div>
-          <button @click="finishAppointment">Finish</button>
-          <button @click="editAppointment">Edit</button>
-          <button @click="deleteAppointment">Delete</button>
+
+          <base-button @clicked="finishAppointment" text="Finish" />
+          <base-button @clicked="editAppointment" text="Edit" />
+          <base-button @clicked="deleteAppointment" text="Delete" />
         </div>
       </template>
     </base-modal>
@@ -56,9 +57,10 @@
 <script>
 import { useStore } from "vuex";
 import BaseModal from "../../../components/common/dialogs/BaseModal.vue";
+import BaseButton from "../../../components/common/buttons/BaseButton.vue";
 
 export default {
-  components: { BaseModal },
+  components: { BaseModal, BaseButton },
   name: "AppointmentDetails",
   props: {
     showDialog: {
@@ -79,7 +81,10 @@ export default {
     }
 
     async function finishAppointment() {
-      await store.dispatch("appointment/finishAppointment", props.appointment.id);
+      await store.dispatch(
+        "appointment/finishAppointment",
+        props.appointment.id
+      );
     }
 
     function editAppointment() {
@@ -87,10 +92,19 @@ export default {
     }
 
     async function deleteAppointment() {
-      await store.dispatch("appointment/deleteAppointment", props.appointment.id);
+      await store.dispatch(
+        "appointment/deleteAppointment",
+        props.appointment.id
+      );
+      hideDialog();
     }
 
-    return { hideDialog, finishAppointment, editAppointment, deleteAppointment };
+    return {
+      hideDialog,
+      finishAppointment,
+      editAppointment,
+      deleteAppointment,
+    };
   },
 };
 </script>
@@ -120,11 +134,4 @@ strong {
 p {
   margin: 0;
 }
-
-/* section {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-content: flex-start;
-} */
 </style>
