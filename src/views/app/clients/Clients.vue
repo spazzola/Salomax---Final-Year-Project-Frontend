@@ -11,6 +11,12 @@
       <div class="col-xl-3 col-md-4 col-sm-4" style="height: 100%">
         <left-menu />
       </div>
+      <div class="col-xl-9 col-md-8, col-sm-8" style="border: 2px solid black">
+        <base-list-view
+          :items="clients"
+          @item-clicked="navigateToClientDetails"
+        />
+      </div>
     </div>
 
     <the-footer />
@@ -18,18 +24,50 @@
 </template>
 
 <script>
-import LeftMenu from '../../../components/app/leftmenu/LeftMenu.vue';
-import TheFooter from '../../../components/web-page/footer/TheFooter.vue';
+import { ref, onBeforeMount } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import LeftMenu from "../../../components/app/leftmenu/LeftMenu.vue";
+import TheFooter from "../../../components/web-page/footer/TheFooter.vue";
+import BaseListView from "../../../components/app/list-view/BaseListView.vue";
 
 export default {
   components: {
     LeftMenu,
-    TheFooter
+    TheFooter,
+    BaseListView,
   },
   setup() {
-    
+    const store = useStore();
+    const router = useRouter();
+    const clients = ref([]);
+
+    async function fetchData() {
+      // loading.value = true;
+      const studioId = localStorage.getItem("studioId");
+
+      await store.dispatch("client/loadClients", studioId);
+      const fetchedClients = store.getters["client/getAllClients"];
+      clients.value = fetchedClients.map((client) => {
+        return {
+          title: client.name + " " + client.surname,
+          id: client.id
+        }
+      })
+      // loading.value = false;
+    }
+
+    function navigateToClientDetails(event) {
+      router.push("/clients/details/" + event.id);
+    }
+
+    onBeforeMount(async () => {
+      await fetchData();
+    });
+
+    return { clients, navigateToClientDetails };
   },
-}
+};
 </script>
 
 <style scoped>
