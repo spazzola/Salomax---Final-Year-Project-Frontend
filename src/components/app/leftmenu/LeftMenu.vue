@@ -8,7 +8,7 @@
         </li>
       </router-link>
 
-      <router-link class="nav-link" active-class="active" to="/clients">
+      <router-link :class="{ 'nav-link': true, 'active': isActiveRoute }" to="/clients">
         <li>
           <font-awesome-icon icon="fa-regular fa-address-card" />
           <p>Clients</p>
@@ -97,7 +97,11 @@ export default {
       }
     })
 
-    return { activeBorderRadius, borderHover, hoveredBorderRadius, handleMouseEnter, handleMouseLeave };
+    const isActiveRoute = computed(() => {
+      return route.path.startsWith('/clients');
+    });
+
+    return { activeBorderRadius, borderHover, hoveredBorderRadius, handleMouseEnter, handleMouseLeave, isActiveRoute };
   },
 };
 </script>
