@@ -12,7 +12,11 @@
         <left-menu />
       </div>
       <div class="col-xl-9 col-md-8, col-sm-8" style="border: 2px solid black;">
-        <h1>Client details</h1>
+        <base-button text="<" @clicked="goBack"/>
+        <p>{{ client.name }}</p>
+        <p>{{ client.surname }}</p>
+        <p>{{ client.phoneNumber }}</p>
+        <p>{{ client.email }}</p>
       </div>
     </div>
 
@@ -21,16 +25,33 @@
 </template>
 
 <script>
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import BaseButton from "../../../components/common/buttons/BaseButton.vue";
 import LeftMenu from "../../../components/app/leftmenu/LeftMenu.vue";
 import TheFooter from "../../../components/web-page/footer/TheFooter.vue";
 
 export default {
   name: "ClientDetails",
   components: {
+    BaseButton,
     LeftMenu,
     TheFooter
   },
   setup() {
+    const store = useStore();
+    const router = useRouter();
+    let client = {};
+
+    const clients = store.getters["client/getAllClients"];
+    const id = parseInt(router.currentRoute.value.params.id);
+    client = clients.find(c => c.id === id);
+
+    function goBack() {
+      router.go(-1);
+    }
+
+    return { client, goBack }
   },
 };
 </script>
@@ -48,6 +69,12 @@ export default {
   height: 15% !important;
   text-align: left;
   padding: 1rem;
+}
+
+h1 {
+  font-size: 6rem;
+  font-weight: bolder;
+  color: #4abdac;
 }
 
 .row {
