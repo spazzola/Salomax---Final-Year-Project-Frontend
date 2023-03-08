@@ -8,7 +8,7 @@
     <div class="message-content">
       Thank you for your interest in our appointment management software.
       <br />
-      I would like to inform you that our software is not currently available
+      We would like to inform you that our software is not currently available
       for mobile and tablet devices, but we are currently working on a mobile
       version that will be released soon. We apologize for any inconvenience
       this may cause and appreciate your patience.

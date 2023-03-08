@@ -48,7 +48,7 @@ export default createStore({
         localStorage.setItem('surname', responseData.surname);
         localStorage.setItem('studioId', responseData.studioId);
         localStorage.setItem('tokenExpiration', expirationDate);
-        console.log(responseData);
+
         //need to get studioId
         context.commit('setUser', {
           id: responseData.id,
