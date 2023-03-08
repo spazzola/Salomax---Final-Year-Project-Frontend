@@ -1,4 +1,9 @@
 <template>
+  <client-add
+    :showDialog="showClientAddDialog"
+    @hide-dialog="hideDialog"
+  />
+
   <div class="container" style="height: 100%">
     <div class="row header">
       <div class="col-5">
@@ -12,10 +17,16 @@
         <left-menu />
       </div>
       <div class="col-xl-9 col-md-8, col-sm-8" style="border: 2px solid black">
-        <base-list-view
-          :items="clients"
-          @item-clicked="navigateToClientDetails"
-        />
+        <div class="row">
+          <div class="col-xl-2">
+            <base-button text="+ New client" @clicked="openClientAddDialog" />
+          </div>
+          <base-list-view
+            class="col-xl-10"
+            :items="clients"
+            @item-clicked="navigateToClientDetails"
+          />
+        </div>
       </div>
     </div>
 
@@ -30,17 +41,22 @@ import { useRouter } from "vue-router";
 import LeftMenu from "../../../components/app/leftmenu/LeftMenu.vue";
 import TheFooter from "../../../components/web-page/footer/TheFooter.vue";
 import BaseListView from "../../../components/app/list-view/BaseListView.vue";
+import BaseButton from "../../../components/common/buttons/BaseButton.vue";
+import ClientAdd from "./ClientAdd.vue";
 
 export default {
   components: {
     LeftMenu,
     TheFooter,
     BaseListView,
+    BaseButton,
+    ClientAdd
   },
   setup() {
     const store = useStore();
     const router = useRouter();
     const clients = ref([]);
+    const showClientAddDialog = ref(false);
 
     async function fetchData() {
       // loading.value = true;
@@ -51,9 +67,9 @@ export default {
       clients.value = fetchedClients.map((client) => {
         return {
           title: client.name + " " + client.surname,
-          id: client.id
-        }
-      })
+          id: client.id,
+        };
+      });
       // loading.value = false;
     }
 
@@ -61,11 +77,26 @@ export default {
       router.push("/clients/details/" + event.id);
     }
 
+    function openClientAddDialog() {
+      showClientAddDialog.value = true;
+    }
+
+    function hideDialog() {
+      showClientAddDialog.value = false;
+      fetchData();
+    }
+
     onBeforeMount(async () => {
       await fetchData();
     });
 
-    return { clients, navigateToClientDetails };
+    return {
+      clients,
+      navigateToClientDetails,
+      showClientAddDialog,
+      openClientAddDialog,
+      hideDialog
+    };
   },
 };
 </script>
