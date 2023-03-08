@@ -6,6 +6,7 @@ import LogIn from '../views/web-page/LogIn.vue'
 import Register from '../views/web-page/Register.vue'
 import Appointments from '../views/app/appointment/Appointments.vue'
 import Clients from '../views/app/clients/Clients.vue';
+import ClientDetails from '../views/app/clients/ClientDetails.vue'
 import Services from '../views/app/services/Services.vue';
 import Employees from '../views/app/employees/Employees.vue';
 import Costs from '../views/app/costs/Costs.vue';
@@ -46,6 +47,12 @@ const routes = [
     path: '/clients',
     name: 'Clients',
     component: Clients
+  },
+  {
+    path: '/clients/details/:id',
+    name: 'ClientDetails',
+    component: ClientDetails,
+    props: true
   },
   {
     path: '/services',
