@@ -22,6 +22,15 @@ export default {
       }
     },
 
+    async editClient(context, data) {
+      try {
+        const response = await axios.put(baseURL + "/client/update", data);
+        return response;
+      } catch (error) {
+        return error.response.data;
+      }
+    },
+
     async deleteClient(context, params) {
       try {
         const response = await axios.delete(baseURL + "/client/deleteAssignedClient", { params });
@@ -29,6 +38,9 @@ export default {
       } catch (error) {
         return error.response.dsta;
       }
-    }
+    },
 
+    async setClient(context, data) {
+      context.commit('setClient', data);
+  }
 }
