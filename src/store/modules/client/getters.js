@@ -3,6 +3,6 @@ export default {
       return state.clients;
   },
   getClient(state) {
-      return state.clients;
+      return state.client;
   }
 }

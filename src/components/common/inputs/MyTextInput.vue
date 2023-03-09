@@ -21,10 +21,13 @@ export default {
     type: {
       type: String,
       default: ''
+    },
+    defaultValue: {
+      type: String
     }
   },
   setup(props, context) {
-    const inputValue = ref(props.value || '');
+    const inputValue = ref(props.defaultValue || '');
 
 
     function updateValue(event) {

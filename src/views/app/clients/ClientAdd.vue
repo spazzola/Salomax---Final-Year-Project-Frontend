@@ -7,7 +7,7 @@
         <h2>New client</h2>
       </template>
       <template #content class="content">
-        <client-form @hide-dialog="hideDialog" @submit-form="submitForm" />
+        <client-form @cancel="hideDialog" @submit-form="submitForm" />
       </template>
     </base-modal>
   </div>
