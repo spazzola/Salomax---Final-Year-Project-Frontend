@@ -1,4 +1,6 @@
 <template>
+  <base-grow-spinner :loading="loading" />
+
   <client-add
     :showDialog="showClientAddDialog"
     @hide-dialog="hideDialog"
@@ -42,6 +44,7 @@ import LeftMenu from "../../../components/app/leftmenu/LeftMenu.vue";
 import TheFooter from "../../../components/web-page/footer/TheFooter.vue";
 import BaseListView from "../../../components/app/list-view/BaseListView.vue";
 import BaseButton from "../../../components/common/buttons/BaseButton.vue";
+import BaseGrowSpinner from "../../../components/common/loading/BaseGrowSpinner.vue";
 import ClientAdd from "./ClientAdd.vue";
 
 export default {
@@ -50,16 +53,18 @@ export default {
     TheFooter,
     BaseListView,
     BaseButton,
+    BaseGrowSpinner,
     ClientAdd
   },
   setup() {
     const store = useStore();
+    const loading = ref(false);
     const router = useRouter();
     const clients = ref([]);
     const showClientAddDialog = ref(false);
 
     async function fetchData() {
-      // loading.value = true;
+      loading.value = true;
       const studioId = localStorage.getItem("studioId");
 
       await store.dispatch("client/loadClients", studioId);
@@ -70,11 +75,13 @@ export default {
           id: client.id,
         };
       });
-      // loading.value = false;
+      loading.value = false;
     }
 
     function navigateToClientDetails(event) {
-      router.push("/clients/details/" + event.id);
+      const selectedClient = store.getters["client/getAllClients"].find(c => c.id === event.id);
+      store.dispatch("client/setClient", selectedClient);
+      router.push("/clients/details/" + selectedClient.id);
     }
 
     function openClientAddDialog() {
@@ -91,6 +98,7 @@ export default {
     });
 
     return {
+      loading,
       clients,
       navigateToClientDetails,
       showClientAddDialog,

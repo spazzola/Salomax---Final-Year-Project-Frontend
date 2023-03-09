@@ -17,6 +17,9 @@
         <p>{{ client.surname }}</p>
         <p>{{ client.phoneNumber }}</p>
         <p>{{ client.email }}</p>
+
+        <base-button @clicked="navigateToClientEdit" text="Edit" />
+        <base-button @clicked="deleteClient" text="Delete" />
       </div>
     </div>
 
@@ -41,17 +44,31 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    let client = {};
-
-    const clients = store.getters["client/getAllClients"];
-    const id = parseInt(router.currentRoute.value.params.id);
-    client = clients.find(c => c.id === id);
+    let client = store.getters["client/getClient"];
 
     function goBack() {
-      router.go(-1);
+      router.push("/clients");
     }
 
-    return { client, goBack }
+    function navigateToClientEdit() {
+      router.push("/clients/edit/" + client.id);
+    }
+
+    async function deleteClient() {
+      const studioId = parseInt(localStorage.getItem("studioId"));
+      const params = {
+        studioId,
+        clientId: client.id
+      }
+      await store.dispatch(
+        "client/deleteClient",
+        params
+      );
+     router.push("/clients");
+    }
+
+
+    return { client, goBack, navigateToClientEdit, deleteClient }
   },
 };
 </script>
