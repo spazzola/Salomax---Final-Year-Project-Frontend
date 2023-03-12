@@ -32,6 +32,7 @@
 <script>
 import { ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import LeftMenu from "../../../components/app/leftmenu/LeftMenu.vue";
 import TheFooter from "../../../components/web-page/footer/TheFooter.vue";
 import BaseListView from "../../../components/app/list-view/BaseListView.vue";
@@ -44,6 +45,7 @@ export default {
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
     const services = ref([]);
 
     async function fetchData() {
@@ -59,11 +61,17 @@ export default {
       });
     }
 
+    function navigateToServiceDetails(event) {
+      const selectedService = store.getters["work/getAllWorks"].find(w => w.id === event.id);
+      store.dispatch("work/setWork", selectedService);
+      router.push("/services/details/" + selectedService.id);
+    }
+
     onBeforeMount(async () => {
       await fetchData();
     });
 
-    return { services };
+    return { services, navigateToServiceDetails };
   },
 };
 </script>
