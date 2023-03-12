@@ -9,6 +9,7 @@ import Clients from '../views/app/clients/Clients.vue';
 import ClientDetails from '../views/app/clients/ClientDetails.vue'
 import ClientEdit from '../views/app/clients/ClientEdit.vue';
 import Services from '../views/app/services/Services.vue';
+import ServiceDetails from '../views/app/services/ServiceDetails.vue';
 import Employees from '../views/app/employees/Employees.vue';
 import Costs from '../views/app/costs/Costs.vue';
 import Help from '../views/app/help/Help.vue';
@@ -65,6 +66,12 @@ const routes = [
     path: '/services',
     name: 'Services',
     component: Services
+  },
+  {
+    path: '/services/details/:id',
+    name: 'ServiceDetails',
+    component: ServiceDetails,
+    props: true
   },
   {
     path: '/employees',
