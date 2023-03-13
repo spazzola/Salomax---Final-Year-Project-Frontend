@@ -13,8 +13,17 @@ export default {
     context.commit('setWorks', works);
   },
 
+  async addWork(context, data) {
+    try {
+      const response = await axios.post(baseURL + "/work/create", data);
+      return response;
+    } catch (error) {
+      return error.response.data;
+    }
+  },
+
   async setWork(context, data) {
     context.commit('setWork', data);
   }
-  
+
 }
