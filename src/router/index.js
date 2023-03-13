@@ -4,14 +4,21 @@ import Pricing from '../views/web-page/Pricing.vue'
 import Features from '../views/web-page/Features.vue'
 import LogIn from '../views/web-page/LogIn.vue'
 import Register from '../views/web-page/Register.vue'
+
 import Appointments from '../views/app/appointment/Appointments.vue'
+
 import Clients from '../views/app/clients/Clients.vue';
 import ClientDetails from '../views/app/clients/ClientDetails.vue'
 import ClientEdit from '../views/app/clients/ClientEdit.vue';
+
 import Services from '../views/app/services/Services.vue';
 import ServiceDetails from '../views/app/services/ServiceDetails.vue';
+import ServiceEdit from '../views/app/services/ServiceEdit.vue';
+
 import Employees from '../views/app/employees/Employees.vue';
+
 import Costs from '../views/app/costs/Costs.vue';
+
 import Help from '../views/app/help/Help.vue';
 
 const routes = [
@@ -71,6 +78,12 @@ const routes = [
     path: '/services/details/:id',
     name: 'ServiceDetails',
     component: ServiceDetails,
+    props: true
+  },
+  {
+    path: '/services/edit/:id',
+    name: 'ServiceEdit',
+    component: ServiceEdit,
     props: true
   },
   {

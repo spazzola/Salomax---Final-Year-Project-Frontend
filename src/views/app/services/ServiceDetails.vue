@@ -18,8 +18,8 @@
         <p>{{ service.taxValue }}</p>
         <p>{{ service.minutesDuration }}</p>
 
-        <!-- <base-button @clicked="navigateToClientEdit" text="Edit" />
-        <base-button @clicked="deleteClient" text="Delete" /> -->
+        <base-button @clicked="navigateToServiceEdit" text="Edit" />
+        <base-button @clicked="deleteService" text="Delete" />
       </div>
     </div>
 
@@ -50,25 +50,25 @@ export default {
       router.push("/services");
     }
 
-    // function navigateToClientEdit() {
-    //   router.push("/clients/edit/" + client.id);
-    // }
+    function navigateToServiceEdit() {
+      router.push("/services/edit/" + service.id);
+    }
 
-    // async function deleteClient() {
-    //   const studioId = parseInt(localStorage.getItem("studioId"));
-    //   const params = {
-    //     studioId,
-    //     clientId: client.id
-    //   }
-    //   await store.dispatch(
-    //     "client/deleteClient",
-    //     params
-    //   );
-    //  router.push("/clients");
-    // }
+    async function deleteService() {
+      const studioId = parseInt(localStorage.getItem("studioId"));
+      const params = {
+        studioId,
+        id: service.id
+      }
+      await store.dispatch(
+        "work/deleteWork",
+        params
+      );
+     router.push("/services");
+    }
 
 
-    return { service, goBack }
+    return { service, goBack, navigateToServiceEdit, deleteService }
   },
 };
 </script>

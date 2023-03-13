@@ -22,6 +22,24 @@ export default {
     }
   },
 
+  async editWork(context, data) {
+    try {
+      const response = await axios.put(baseURL + "/work/update", data);
+      return response;
+    } catch (error) {
+      return error.response.data;
+    }
+  },
+
+  async deleteWork(context, params) {
+    try {
+      const response = await axios.delete(baseURL + "/work/delete", { params });
+      return response
+    } catch (error) {
+      return error.response.dsta;
+    }
+  },
+
   async setWork(context, data) {
     context.commit('setWork', data);
   }

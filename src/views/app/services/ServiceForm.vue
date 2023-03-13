@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
 import BaseButton from "../../../components/common/buttons/BaseButton.vue";
 import BaseGrowSpinner from "../../../components/common/loading/BaseGrowSpinner.vue";
 import MyTextInput from "../../../components/common/inputs/MyTextInput.vue";
@@ -105,23 +105,24 @@ export default {
       }
     }
 
-    // function handleSubmitEdit() {
-    //   if (validateForm()) {
-    //     let studioId = localStorage.getItem("studioId");
-    //     const updateClientRequest = {
-    //       id: props.client.id,
-    //       name: name.value,
-    //       surname: surname.value,
-    //       phoneNumber: phoneNumber.value,
-    //       email: email.value,
-    //       assignedStudioId: studioId,
-    //     };
+    function handleSubmitEdit() {
+      if (validateForm()) {
+        let studioId = localStorage.getItem("studioId");
+        const updateServiceRequest = {
+          id: props.service.id,
+          name: name.value,
+          price: price.value,
+          taxValue: taxValue.value,
+          minutesDuration: minutesDuration.value,
+          iconName: "ToImplement",
+          assignedStudioId: studioId,
+        };
 
-    //     context.emit("submit-edit-form", updateClientRequest);
-    //   } else {
-    //     console.log("ERORR");
-    //   }
-    // }
+        context.emit("submit-edit-form", updateServiceRequest);
+      } else {
+        console.log("ERORR");
+      }
+    }
 
     function validateForm() {
       if (name.value === "") {
@@ -140,19 +141,19 @@ export default {
       return true;
     }
 
-    // function setUpValuesForEditing() {
-    //   if (props.mode === "edit") {
-    //     const client = props.client;
-    //     name.value = client.name;
-    //     surname.value = client.surname;
-    //     phoneNumber.value = client.phoneNumber;
-    //     email.value = client.email;
-    //   }
-    // }
+    function setUpValuesForEditing() {
+      if (props.mode === "edit") {
+        const service = props.service;
+        name.value = service.name;
+        price.value = service.price;
+        taxValue.value = service.taxValue;
+        minutesDuration.value = service.minutesDuration;
+      }
+    }
 
-    // onBeforeMount(async () => {
-    //   setUpValuesForEditing();
-    // });
+    onBeforeMount(async () => {
+      setUpValuesForEditing();
+    });
 
     return {
       loading,
@@ -166,7 +167,7 @@ export default {
       handleMinutesDurationInput,
       handleCancel,
       handleSubmitAdd,
-      // handleSubmitEdit,
+      handleSubmitEdit,
     };
   },
 };
