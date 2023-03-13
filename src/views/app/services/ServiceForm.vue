@@ -8,17 +8,17 @@
         :defaultValue="name"
         @text-input-finished="handleNameInput"
       />
-      <my-text-input
+      <my-number-input
         placeholder="Price"
         :defaultValue="price"
         @text-input-finished="handlePriceInput"
       />
-      <my-text-input
+      <my-number-input
         placeholder="Tax value"
         :defaultValue="taxValue"
         @text-input-finished="handleTaxValueInput"
       />
-      <my-text-input
+      <my-number-input
         placeholder="Minutes duration"
         :defaultValue="minutesDuration"
         @text-input-finished="handleMinutesDurationInput"
@@ -45,10 +45,11 @@ import { ref, onBeforeMount } from "vue";
 import BaseButton from "../../../components/common/buttons/BaseButton.vue";
 import BaseGrowSpinner from "../../../components/common/loading/BaseGrowSpinner.vue";
 import MyTextInput from "../../../components/common/inputs/MyTextInput.vue";
+import MyNumberInput from "../../../components/common/inputs/MyNumberInput.vue";
 
 export default {
   name: "ServiceForm",
-  components: { BaseButton, BaseGrowSpinner, MyTextInput },
+  components: { BaseButton, BaseGrowSpinner, MyTextInput, MyNumberInput },
   emits: ["cancel", "submit-form", "submit-edit-form"],
   props: {
     mode: {
@@ -72,15 +73,15 @@ export default {
     }
 
     function handlePriceInput(value) {
-      price.value = value;
+      price.value = parseFloat(value);
     }
 
     function handleTaxValueInput(value) {
-      taxValue.value = value;
+      taxValue.value = parseFloat(value);
     }
 
     function handleMinutesDurationInput(value) {
-      minutesDuration.value = value;
+      minutesDuration.value = parseInt(value);
     }
 
     function handleCancel() {
