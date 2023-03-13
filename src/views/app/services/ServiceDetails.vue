@@ -14,6 +14,9 @@
       <div class="col-xl-9 col-md-8, col-sm-8" style="border: 2px solid black;">
         <base-button text="<" @clicked="goBack"/>
         <p>{{ service.name }}</p>
+        <p>{{ service.price }}</p>
+        <p>{{ service.taxValue }}</p>
+        <p>{{ service.minutesDuration }}</p>
 
         <!-- <base-button @clicked="navigateToClientEdit" text="Edit" />
         <base-button @clicked="deleteClient" text="Delete" /> -->
